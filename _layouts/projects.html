@@ -22,7 +22,8 @@ bodyClass: "page-projects"
           <div class="service-content">
             <img alt="{{ project.title }}"
               src="{{ '/images/projects/' | append: project.title | append: '.jpg' | relative_url }}"
-              class="img-fluid w-100" style="height: 250px; object-fit: cover; border-radius: 8px;" />
+              data-title="{{ project.title }}" class="project-image img-fluid w-100"
+              style="height: 250px; object-fit: cover; border-radius: 8px;" onerror="handleImageError(this)" />
           </div>
         </div>
       </div>
@@ -30,3 +31,25 @@ bodyClass: "page-projects"
     </div>
   </div>
 </div>
+
+<script>
+  function handleImageError(img) {
+    const title = img.dataset.title;
+    // Пробуем разные расширения
+    const extensions = ['.jfif', '.png', '.jpeg', '.webp'];
+    let currentSrc = img.src;
+    let currentExt = currentSrc.substring(currentSrc.lastIndexOf('.'));
+
+    const currentExtIndex = extensions.indexOf(currentExt);
+
+    if (currentExtIndex < extensions.length - 1) {
+      // Пробуем следующее расширение
+      const newExt = extensions[currentExtIndex + 1];
+      img.src = currentSrc.replace(currentExt, newExt);
+    } else {
+      // Все расширения перепробованы, ставим заглушку
+      img.src = '{{ "/images/placeholder.jpg" | relative_url }}';
+      img.onerror = null; // Предотвращаем бесконечный цикл
+    }
+  }
+</script>
